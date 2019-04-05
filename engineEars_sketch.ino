@@ -316,7 +316,7 @@ void loop(){
       newTerrainType = TERRAIN_EMPTY;
       newTerrainDuration = 10 + random(10);
     }
-  } // :3
+  }
     
   if (buttonPushed) {
     if (heroPos <= HERO_POSITION_RUN_LOWER_2) heroPos = HERO_POSITION_JUMP_1;
