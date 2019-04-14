@@ -7,21 +7,18 @@
 #define DC   9
 #define RESET  8  
 
-
 TFT myScreen = TFT(CS, DC, RESET);
-
 
 //Here will be the buttons we are using for gaming...
 #define PIN_BUTTON_A 
 #define PIN_BUTTON_B 
 #define PIN_BUTTON_C 
-#define PIN_BUTTON_D
+#define PIN_BUTTON_D 
 
 //This is the on/off button
-#define Pin_BUTTON_POWER
+#define Pin_BUTTON_POWER  
 
 //Stuff from old code. Will have to edit for screen and different sized jumps. Also will need to figure out how sound works. 
-
 #define PIN_AUTOPLAY 1
 #define PIN_READWRITE 10
 #define PIN_CONTRAST 12
