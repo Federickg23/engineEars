@@ -1,6 +1,29 @@
 #include <SD.h>
 #include <SPI.h>
 #include <TFT.h>
+#include "Adafruit_GFX.h"
+#include "MCUFRIEND_kbv.h" 
+
+//Colors
+#define BLACK 0x0000
+#define NAVY 0x000F
+#define DARKGREEN 0x03E0
+#define DARKCYAN 0x03EF
+#define MAROON 0x7800
+#define PURPLE 0x780F
+#define OLIVE 0x7BE0
+#define LIGHTGREY 0xC618
+#define DARKGREY 0x7BEF
+#define BLUE 0x001F
+#define GREEN 0x07E0
+#define CYAN 0x07FF
+#define RED 0xF800
+#define MAGENTA 0xF81F
+#define YELLOW 0xFFE0
+#define WHITE 0xFFFF
+#define ORANGE 0xFD20
+#define GREENYELLOW 0xAFE5
+#define PINK 0xF81F
 
 //These here are for the screen
 #define CS   10
@@ -8,7 +31,6 @@
 #define RESET  8  
 
 TFT myScreen = TFT(CS, DC, RESET);
-
 //Here will be the buttons we are using for gaming...
 #define PIN_BUTTON_A 
 #define PIN_BUTTON_B 
@@ -22,6 +44,13 @@ TFT myScreen = TFT(CS, DC, RESET);
 #define PIN_AUTOPLAY 1
 #define PIN_READWRITE 10
 #define PIN_CONTRAST 12
+
+#define TONE_1 1
+#define TONE_2 2
+#define TONE_3 3
+#define TONE_4 4
+
+
 
 #define SPRITE_RUN1 1
 #define SPRITE_RUN2 2
@@ -129,10 +158,10 @@ void initializeGraphics(){
     B11000,
   };
   int i;
-  // Skip using character 0, this allows lcd.print() to be used to
+  // Skip using character 0, this allows myScreen.print() to be used to
   // quickly draw multiple characters
   for (i = 0; i < 7; ++i) {
-    lcd.createChar(i + 1, &graphics[i * 8]);
+    myScreen.rect(i + 1, &graphics[i * 8]);
   }
   for (i = 0; i < TERRAIN_WIDTH; ++i) {
     terrainUpper[i] = SPRITE_TERRAIN_EMPTY;
@@ -145,7 +174,7 @@ void initializeGraphics(){
 
 
 // Slide the terrain to the left in half-character increments
-//
+
 void advanceTerrain(char* terrain, byte newTerrain){
   for (int i = 0; i < TERRAIN_WIDTH; ++i) {
     char current = terrain[i];
@@ -228,14 +257,14 @@ bool drawHero(byte position, char* terrainUpper, char* terrainLower, unsigned in
   terrainLower[TERRAIN_WIDTH] = '\0';
   char temp = terrainUpper[16-digits];
   terrainUpper[16-digits] = '\0';
-  lcd.setCursor(0,0);
-  lcd.print(terrainUpper);
+  myScreen.setCursor(0,0);
+  myScreen.print(terrainUpper);
   terrainUpper[16-digits] = temp;  
-  lcd.setCursor(0,1);
-  lcd.print(terrainLower);
+  myScreen.setCursor(0,1);
+  myScreen.print(terrainLower);
   
-  lcd.setCursor(16 - digits,0);
-  lcd.print(score);
+  myScreen.setCursor(16 - digits,0);
+  myScreen.print(score);
 
   terrainUpper[HERO_HORIZONTAL_POSITION] = upperSave;
   terrainLower[HERO_HORIZONTAL_POSITION] = lowerSave;
@@ -248,30 +277,36 @@ void buttonPush() {
   buttonPushed = true;
 }
 
+void titleScreen(){
+//    void setCursor(uint16_t x0, uint16_t y0);
 
+//    myScreen.setCursor(0,0);
+//    myScreen.setTextColor(GREEN);
+//    myScreen.setTextSize(12);
+//    myScreen.setTextWrap(true);
+    for (int j = 0; j < 20; j++) {
+        myScreen.setCursor(145, 290);
+        int color = tft.color565(r -= 12, g -= 12, b -= 12);
+        myScreen.setTextColor(color);
+        myScreen.print("Box bird");
+        delay(30);
+    }
+    
+}
 
  
 void setup() {
-  // put your setup code here, to run once:
-   myScreen.begin();  
-   myScreen.background(0,0,0);  // clear the screen with black
-   delay(1000);  // pause for dramatic effect
-
-  //This is how things are instantiated in the old code, can likely be changed. 
-  
-  pinMode(PIN_READWRITE, OUTPUT);
-  digitalWrite(PIN_READWRITE, LOW);
-  pinMode(PIN_CONTRAST, OUTPUT);
-  digitalWrite(PIN_CONTRAST, LOW);
-  pinMode(PIN_BUTTON, INPUT);
-  digitalWrite(PIN_BUTTON, HIGH);
-  pinMode(PIN_AUTOPLAY, OUTPUT);
-  digitalWrite(PIN_AUTOPLAY, HIGH);
-  
-  // Digital pin 2 maps to interrupt 0
-  attachInterrupt(0/*PIN_BUTTON*/, buttonPush, FALLING);
-  
-  initializeGraphics();
+    myScreen.begin();  
+    myScreen.fillScreen(BLACK);  // clear the screen with black
+    delay(1000);  // pause for dramatic effect
+    titleScreen();
+    pinMode(PIN_BUTTON_A, INPUT);
+    pinMode(PIN_BUTTON_B, INPUT);
+    pinMode(PIN_BUTTON_C, INPUT);
+    pinMode(PIN_BUTTON_D, INPUT);
+    initializeGraphics();
+    myScreen.fillScreen(BLACK);  // clear the screen with black
+    delay(1000);  // pause for dramatic effect
 }
 
 void loop(){
@@ -281,12 +316,19 @@ void loop(){
   static bool playing = false;
   static bool blink = false;
   static unsigned int distance = 0;
-  
+
+   button_State_1 = digitalRead(PIN_BUTTON_A);
+   button_State_2 = digitalRead(PIN_BUTTON_B);
+   button_State_3 = digitalRead(PIN_BUTTON_C);
+   button_State_4 = digitalRead(PIN_BUTTON_D);
+
+  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+
   if (!playing) {
     drawHero((blink) ? HERO_POSITION_OFF : heroPos, terrainUpper, terrainLower, distance >> 3);
     if (blink) {
-      lcd.setCursor(0,0);
-      lcd.print("Press Start");
+      myScreen.setCursor(0,0);
+      myScreen.print("Press Start");
     }
     delay(250);
     blink = !blink;
@@ -299,7 +341,6 @@ void loop(){
     }
     return;
   }
-
   // Shift the terrain to the left
   advanceTerrain(terrainLower, newTerrainType == TERRAIN_LOWER_BLOCK ? SPRITE_TERRAIN_SOLID : SPRITE_TERRAIN_EMPTY);
   advanceTerrain(terrainUpper, newTerrainType == TERRAIN_UPPER_BLOCK ? SPRITE_TERRAIN_SOLID : SPRITE_TERRAIN_EMPTY);
