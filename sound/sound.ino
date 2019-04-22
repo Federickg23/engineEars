@@ -1,14 +1,14 @@
 //tone(pin, frequency, duration)
 const int speaker = 13;
-const int pitches[] = { 1, 2, 3, 4, 5 };
-const int tones[] = { 100, 200, 300, 400, 500 };
+const int pitches[] = { 1, 2, 3, 4 };
+const int tones[] = { 100, 200, 300, 400 };
 const int buttonOne = 1;
 const int buttonTwo = 2;
 const int buttonThree = 3;
 const int buttonFour = 4;
-const int buttonFive = 5;
-const int choice;
-const int game;
+//const int buttonFive = 5;
+int choice;
+ int game;
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,12 +17,12 @@ void setup() {
   pinMode (buttonTwo,INPUT);
   pinMode (buttonThree,INPUT);
   pinMode (buttonFour,INPUT);
-  pinMode (buttonFive,INPUT);
+//  pinMode (buttonFive,INPUT);
   digitalWrite (buttonOne, HIGH);
   digitalWrite (buttonTwo, HIGH);
   digitalWrite (buttonThree, HIGH);
   digitalWrite (buttonFour, HIGH);
-  digitalWrite (buttonFive, HIGH);
+//  digitalWrite (buttonFive, HIGH);
 
 }
 
@@ -30,8 +30,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   playNote();
   buttonPlaysSound();
-  if (choice == game) {
+  if (choice != game) {
     //play game again
+    exit(0);
   }
 
 }
@@ -67,24 +68,17 @@ void buttonPlaysSound() {
     noTone(13);
     choice = 4;
   }
-
-  if (digitalRead(buttonFive) == LOW)
-  {
-    tone(13, 500, 1000);
-    noTone(13);
-    choice = 5;
-  }
 }
 
 //TRIED USING ONLINE VERSION AND MODIFIED IT
 void playNote() {
 
-  int count = 5;
+  int count = 4;
   int index = 0;
   index = (int)random(1, count);
 
   // play the tone corresponding to the note name
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 4; i++) {
     if (pitches[i] == index) {
       playTone(tones[i], 1000);
       game = i;
