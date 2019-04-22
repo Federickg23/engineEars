@@ -32,11 +32,18 @@
 
 TFT myScreen = TFT(CS, DC, RESET);
 //Here will be the buttons we are using for gaming...
-#define PIN_BUTTON_A 
-#define PIN_BUTTON_B 
-#define PIN_BUTTON_C 
-#define PIN_BUTTON_D 
+/////////////////////////////////////////////////////////
+const int speaker = 13;
+const int pitches[] = { 1, 2, 3, 4 };
+const int tones[] = { 100, 200, 300, 400 };
+const int buttonOne = 1;
+const int buttonTwo = 2;
+const int buttonThree = 3;
+const int buttonFour = 4;
 
+//const int choice 1;
+//const int game ;
+/////////////////////////////////////////////////////////
 //This is the on/off button
 #define Pin_BUTTON_POWER  
 
@@ -45,10 +52,10 @@ TFT myScreen = TFT(CS, DC, RESET);
 #define PIN_READWRITE 10
 #define PIN_CONTRAST 12
 
-#define TONE_1 1
-#define TONE_2 2
-#define TONE_3 3
-#define TONE_4 4
+//#define TONE_1 1
+//#define TONE_2 2
+//#define TONE_3 3
+//#define TONE_4 4
 
 
 
@@ -169,12 +176,7 @@ void initializeGraphics(){
   }
 }
 
-
-
-
-
 // Slide the terrain to the left in half-character increments
-
 void advanceTerrain(char* terrain, byte newTerrain){
   for (int i = 0; i < TERRAIN_WIDTH; ++i) {
     char current = terrain[i];
@@ -278,12 +280,7 @@ void buttonPush() {
 }
 
 void titleScreen(){
-//    void setCursor(uint16_t x0, uint16_t y0);
 
-//    myScreen.setCursor(0,0);
-//    myScreen.setTextColor(GREEN);
-//    myScreen.setTextSize(12);
-//    myScreen.setTextWrap(true);
     for (int j = 0; j < 20; j++) {
         myScreen.setCursor(145, 290);
         int color = tft.color565(r -= 12, g -= 12, b -= 12);
@@ -300,10 +297,19 @@ void setup() {
     myScreen.fillScreen(BLACK);  // clear the screen with black
     delay(1000);  // pause for dramatic effect
     titleScreen();
-    pinMode(PIN_BUTTON_A, INPUT);
-    pinMode(PIN_BUTTON_B, INPUT);
-    pinMode(PIN_BUTTON_C, INPUT);
-    pinMode(PIN_BUTTON_D, INPUT);
+//    pinMode(PIN_BUTTON_A, INPUT);
+//    pinMode(PIN_BUTTON_B, INPUT);
+//    pinMode(PIN_BUTTON_C, INPUT);
+//    pinMode(PIN_BUTTON_D, INPUT);
+    pinMode (speaker,OUTPUT);
+    pinMode (buttonOne,INPUT);
+    pinMode (buttonTwo,INPUT);
+    pinMode (buttonThree,INPUT);
+    pinMode (buttonFour,INPUT);
+    digitalWrite (buttonOne, HIGH);
+    digitalWrite (buttonTwo, HIGH);
+    digitalWrite (buttonThree, HIGH);
+    digitalWrite (buttonFour, HIGH);
     initializeGraphics();
     myScreen.fillScreen(BLACK);  // clear the screen with black
     delay(1000);  // pause for dramatic effect
@@ -317,10 +323,10 @@ void loop(){
   static bool blink = false;
   static unsigned int distance = 0;
 
-   button_State_1 = digitalRead(PIN_BUTTON_A);
-   button_State_2 = digitalRead(PIN_BUTTON_B);
-   button_State_3 = digitalRead(PIN_BUTTON_C);
-   button_State_4 = digitalRead(PIN_BUTTON_D);
+   button_State_1 = digitalRead(buttonOne);
+   button_State_2 = digitalRead(buttonTwo);
+   button_State_3 = digitalRead(buttonThree);
+   button_State_4 = digitalRead(buttonFour);
 
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
 
@@ -341,6 +347,15 @@ void loop(){
     }
     return;
   }
+  ///////////////////////////////////////////////////////
+  //THIS IS THE STUFF FROM KAT
+  playNote();
+  buttonPlaysSound();
+  if (choice == game) {
+    //play game again
+  }
+  ///////////////////////////////////////////////////////
+
   // Shift the terrain to the left
   advanceTerrain(terrainLower, newTerrainType == TERRAIN_LOWER_BLOCK ? SPRITE_TERRAIN_SOLID : SPRITE_TERRAIN_EMPTY);
   advanceTerrain(terrainUpper, newTerrainType == TERRAIN_UPPER_BLOCK ? SPRITE_TERRAIN_SOLID : SPRITE_TERRAIN_EMPTY);
@@ -366,7 +381,7 @@ void loop(){
   } else {
     if (heroPos == HERO_POSITION_RUN_LOWER_2 || heroPos == HERO_POSITION_JUMP_8) {
       heroPos = HERO_POSITION_RUN_LOWER_1;
-    } else if ((heroPos >= HERO_POSITION_JUMP_3 && heroPos <= HERO_POSITION_JUMP_5) && terrainLower[HERO_HORIZONTAL_POSITION] != SPRITE_TERRAIN_EMPTY) {
+    } else if ((heroPos >= HERO_POSITION_JUMP_3 && heroPos <= HERO_POSITION_JUMP_5) && terrainLower[HERO_HORIZONTAL_POSITION] != SPRITE_TERRAIN_EMPTY){
       heroPos = HERO_POSITION_RUN_UPPER_1;
     } else if (heroPos >= HERO_POSITION_RUN_UPPER_1 && terrainLower[HERO_HORIZONTAL_POSITION] == SPRITE_TERRAIN_EMPTY) {
       heroPos = HERO_POSITION_JUMP_5;
@@ -381,3 +396,62 @@ void loop(){
   }
   delay(100);
 }
+///////////////////////////////////////////////////////////
+void buttonPlaysSound() {
+  
+  noTone(13);
+  if (digitalRead(buttonOne) == LOW)
+  {
+    tone(13, 100, 1000);
+    noTone(13);
+    choice = 1;
+  }
+
+  if (digitalRead(buttonTwo) == LOW)
+  {
+    tone(13, 200, 1000);
+    noTone(13);
+    choice = 2;
+  }
+
+  if (digitalRead(buttonThree) == LOW)
+  {
+    tone(13, 300, 1000);
+    noTone(13);
+    choice = 3;
+  }
+
+  if (digitalRead(buttonFour) == LOW)
+  {
+    tone(13, 400, 1000);
+    noTone(13);
+    choice = 4;
+  }
+}
+
+//TRIED USING ONLINE VERSION AND MODIFIED IT
+void playNote() {
+
+  int count = 4;
+  int index = 0;
+  index = (int)random(1, count);
+
+  // play the tone corresponding to the note name
+  for (int i = 0; i < 4; i++) {
+    if (pitches[i] == index) {
+      playTone(tones[i], 1000);
+      game = i;
+    }
+  }
+}
+
+//NOT SURE HOW TO USE SPEAKER LOL
+void playTone(int tone, int duration) {
+  for (long i = 0; i < duration * 1000L; i += tone * 2) {
+    digitalWrite(speaker, HIGH);
+    delayMicroseconds(tone);
+    digitalWrite(speaker, LOW);
+    delayMicroseconds(tone);
+  }
+}
+////////////////////////////////////////////////////////
