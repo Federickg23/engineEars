@@ -45,6 +45,11 @@ int lastButtonState2 = LOW;
 int lastButtonState3 = LOW;   
 int lastButtonState4 = LOW;   
 
+bool isPushed1 = false;
+bool isPushed2 = false;
+bool isPushed3 = false;
+bool isPushed4 = false;
+
 void setup()
 {
   pinMode(buttonPin1, INPUT);
@@ -114,44 +119,36 @@ void loop()
 {
 
   tft.textMode();
-  buttonState1 = digitalRead(buttonPin1);
-  buttonState2 = digitalRead(buttonPin2);
-  buttonState3 = digitalRead(buttonPin3);
-  buttonState4 = digitalRead(buttonPin4);
-  
-  if (buttonState1 != lastButtonState1) {
-    if (buttonState1 == HIGH) {
-      // if the current state is HIGH then the button went from off to on:
-      tft.textWrite("Red");
-    }
+  if(digitalRead(buttonPin1)== HIGH){
+    isPushed1 = true;
+  }
+  if(digitalRead(buttonPin2)== HIGH){
+    isPushed2 = true;
+  }
+  if(digitalRead(buttonPin3)== HIGH){
+    isPushed3 = true;
+  }
+  if(digitalRead(buttonPin4)== HIGH){
+    isPushed4 = true;
+  }
+  if (isPushed1) {
+    tft.textWrite("Red ");
     delay(50);
   }
-  else if (buttonState2 != lastButtonState2) {
-    if (buttonState2 == HIGH) {
-      // if the current state is HIGH then the button went from off to on:
-      tft.textWrite("Blue");
-    }
+  else if (isPushed2) {
+    
+    tft.textWrite("Blue ");
     delay(50);
   }
-  else if (buttonState3 != lastButtonState3) {
-    if (buttonState3 == HIGH) {
-      // if the current state is HIGH then the button went from off to on:
-      tft.textWrite("Green");
-    }
+  else if (isPushed3) {
+    tft.textWrite("Green");
     delay(50);
   }
-  else if (buttonState4 != lastButtonState4) {
-    if (buttonState4 == HIGH) {
-      // if the current state is HIGH then the button went from off to on:
-      tft.textWrite("Yellow");
-    }
+  else if (isPushed4) {
+    tft.textWrite("Yellow");
     delay(50);
   }
-//  delay(5000);
-  lastButtonState1 = buttonState1;
-  lastButtonState2 = buttonState2;
-  lastButtonState3 = buttonState3;
-  lastButtonState4 = buttonState4;
+
   
   
 }
