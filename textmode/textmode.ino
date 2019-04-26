@@ -133,19 +133,24 @@ void loop()
   }
   if (isPushed1) {
     tft.textWrite("Red ");
+    isPushed1 = false;
     delay(50);
+    
   }
   else if (isPushed2) {
     
     tft.textWrite("Blue ");
+    isPushed2 = false;
     delay(50);
   }
   else if (isPushed3) {
     tft.textWrite("Green");
+    isPushed3 = false;
     delay(50);
   }
   else if (isPushed4) {
     tft.textWrite("Yellow");
+    isPushed4 = false;
     delay(50);
   }
 
